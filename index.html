@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<title>Gesture Mastery</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#111;color:#eee;font-family:system-ui,-apple-system,Segoe UI,sans-serif}body{overflow:hidden}#app{position:relative;width:100%;height:100%;height:100dvh;background:#111;overflow:hidden}#imagem{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:calc(100vw - 24px);max-height:calc(100dvh - 150px);width:auto;height:auto;object-fit:contain;display:none}#inicio{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#aaa}#inicio h1{color:#eee;font-size:clamp(1.4rem,5vw,2rem);margin:0 0 12px}#inicio p{max-width:440px;line-height:1.5;margin:0 0 20px}button{border:1px solid #555;background:#242424;color:#eee;padding:11px 15px;border-radius:10px;font-size:15px;cursor:pointer}button:active{background:#444}#erro{color:#ff9b9b;margin-top:12px;max-width:90%;font-size:14px}#topo{position:absolute;left:0;right:0;top:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 10px 12px;background:linear-gradient(rgba(0,0,0,.9),transparent);flex-wrap:wrap}#tempo{min-width:52px;text-align:center;font-variant-numeric:tabular-nums;font-size:18px;font-weight:600}#configTempo{display:flex;align-items:center;gap:6px;color:#ddd;font-size:14px}#intervaloSelect,#minutosCustom{border:1px solid #555;background:#242424;color:#eee;border-radius:8px;padding:8px;font-size:14px}#minutosCustom{width:72px}#barra{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:24px;padding:12px 10px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.85))}#barra button{padding:12px 20px;font-size:20px;min-width:58px}#app:fullscreen{background:#000}.escondido{display:none!important}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="inicio"><h1>Gesture Mastery</h1><p>Escolha uma pasta de imagens, se o navegador permitir, ou selecione várias fotos. A galeria alternará automaticamente.</p><button id="escolher">Selecionar pasta</button><button id="selecionarArquivos" style="margin-top:10px">Selecionar imagens</button><div id="erro" role="status"></div></div>
+  <img id="imagem" alt="Imagem da galeria">
+  <div id="topo"><span id="tempo">1:00</span><label id="configTempo">Intervalo <select id="intervaloSelect"><option value=15>15 s</option><option value=30>30 s</option><option value=60 selected>1 min</option><option value=120>2 min</option><option value=300>5 min</option><option value=600>10 min</option><option value=custom>Personalizado</option></select><input id="minutosCustom" type="number" min=1 max=1440 step=1 placeholder="min" class="escondido" aria-label="Minutos personalizados"></label></div><div id="barra"><button id="anterior" aria-label="Foto anterior">◀</button><button id="proxima" aria-label="Próxima foto">▶</button></div>
+  <input id="arquivos" type="file" accept="image/*" multiple class="escondido">
+  <input id="pastaMobile" type="file" accept="image/*" multiple webkitdirectory directory class="escondido">
+</div>
+<script>
+let imagens=[],atual=-1,segundos=60,duracao=60,intervalo=null;
+const app=document.getElementById('app'),img=document.getElementById('imagem'),tempo=document.getElementById('tempo'),inicio=document.getElementById('inicio'),erro=document.getElementById('erro'),arquivos=document.getElementById('arquivos'),pastaMobile=document.getElementById('pastaMobile'),intervaloSelect=document.getElementById('intervaloSelect'),minutosCustom=document.getElementById('minutosCustom');
+function atualizarTempo(){tempo.textContent=Math.floor(segundos/60)+':'+String(segundos%60).padStart(2,'0')}
+function embaralhar(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function mostrar(n){if(!imagens.length)return;atual=(n+imagens.length)%imagens.length;img.src=imagens[atual];img.style.display='block';inicio.style.display='none';segundos=duracao;atualizarTempo();clearInterval(intervalo);intervalo=setInterval(()=>{segundos--;atualizarTempo();if(segundos<=0){if(imagens.length===1)mostrar(atual);else{let p;do{p=Math.floor(Math.random()*imagens.length)}while(p===atual);mostrar(p)}}},1000)}
+function carregarLista(lista){const validos=Array.from(lista).filter(f=>f.type.startsWith('image/')||/\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(f.name));if(!validos.length){erro.textContent='Não encontrei imagens na seleção.';return}imagens.forEach(u=>URL.revokeObjectURL(u));imagens=validos.map(f=>URL.createObjectURL(f));embaralhar(imagens);erro.textContent='';mostrar(0)}
+document.getElementById('escolher').onclick=async()=>{erro.textContent='';if(window.showDirectoryPicker){try{const dir=await window.showDirectoryPicker();const lista=[];for await(const [,handle] of dir.entries()){if(handle.kind==='file'){const f=await handle.getFile();if(f.type.startsWith('image/')||/\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(f.name))lista.push(f)}}carregarLista(lista);return}catch(e){if(e.name==='AbortError')return;erro.textContent='O navegador não conseguiu selecionar a pasta. Tente selecionar imagens individualmente ou use o botão de pasta alternativo.'}}
+pastaMobile.click()};
+document.getElementById('selecionarArquivos').onclick=()=>arquivos.click();arquivos.onchange=()=>{if(arquivos.files?.length)carregarLista(arquivos.files);arquivos.value=''};pastaMobile.onchange=()=>{if(pastaMobile.files?.length)carregarLista(pastaMobile.files);pastaMobile.value=''};
+intervaloSelect.onchange=()=>{const custom=intervaloSelect.value==='custom';minutosCustom.classList.toggle('escondido',!custom);if(!custom){duracao=Number(intervaloSelect.value);if(atual>=0)mostrar(atual)}};
+minutosCustom.onchange=()=>{const m=Math.max(1,Math.min(1440,Number(minutosCustom.value)||1));minutosCustom.value=m;duracao=m*60;if(atual>=0)mostrar(atual)};
+document.getElementById('anterior').onclick=()=>mostrar(atual-1);document.getElementById('proxima').onclick=()=>mostrar(atual+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')mostrar(atual-1);if(e.key==='ArrowRight')mostrar(atual+1)});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
