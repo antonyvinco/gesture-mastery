@@ -1,5 +1,5 @@
-const CACHE_NAME = "gesture-mastery-v2";
-const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon.svg"];
+const CACHE_NAME = "gesture-mastery-v3";
+const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon.svg?v=2"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));
   self.skipWaiting();
