@@ -8,7 +8,7 @@
 <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
 <title>Gesture Mastery</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#111;color:#eee;font-family:system-ui,-apple-system,Segoe UI,sans-serif}body{overflow:hidden}#app{position:relative;width:100%;height:100%;height:100dvh;background:#111;overflow:hidden}#imagem{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:calc(100vw - 24px);max-height:calc(100dvh - 150px);width:auto;height:auto;object-fit:contain;display:none}#inicio{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#aaa}#inicio h1{color:#eee;font-size:clamp(1.4rem,5vw,2rem);margin:0 0 12px}#inicio p{max-width:440px;line-height:1.5;margin:0 0 20px}button{border:1px solid #555;background:#242424;color:#eee;padding:11px 15px;border-radius:10px;font-size:15px;cursor:pointer}button:active{background:#444}#erro{color:#ff9b9b;margin-top:12px;max-width:90%;font-size:14px}#topo{position:absolute;left:0;right:0;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 6px 12px;background:linear-gradient(rgba(0,0,0,.9),transparent);flex-wrap:nowrap}#tempo{position:static;transform:none;width:auto;flex:0 0 auto;text-align:center;font-variant-numeric:tabular-nums;font-size:19px;font-weight:600;pointer-events:none}#configTempo{display:flex;align-items:center;gap:4px;color:#ddd;font-size:13px;flex:0 1 auto;min-width:0}#intervaloSelect,#minutosCustom{border:1px solid #555;background:#242424;color:#eee;border-radius:8px;padding:9px 7px;font-size:14px}#minutosCustom{width:90px}#intervaloSelect{width:128px;padding:9px 6px;font-size:14px}#intervaloSelect:focus,#minutosCustom:focus{outline:none;box-shadow:none;border-color:#555}#idiomas{position:static;display:flex;gap:0;width:max-content;min-width:0;flex:0 0 auto;border:1px solid #555;border-radius:8px;overflow:hidden;justify-content:flex-start}#idiomas button{border:0;border-radius:0;padding:9px 12px;font-size:14px;min-width:44px;background:#242424;color:#aaa}#idiomas button.ativo{background:#333;color:#fff;font-weight:700}#barra{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:24px;padding:12px 10px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.85))}#barra button{padding:12px 20px;font-size:20px;min-width:58px}#app:fullscreen{background:#000}.escondido{display:none!important}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#111;color:#eee;font-family:system-ui,-apple-system,Segoe UI,sans-serif}body{overflow:hidden}#app{position:relative;width:100%;height:100%;height:100dvh;background:#111;overflow:hidden}#imagem{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:calc(100vw - 24px);max-height:calc(100dvh - 150px);width:auto;height:auto;object-fit:contain;display:none}#inicio{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#aaa}#inicio h1{color:#eee;font-size:clamp(1.4rem,5vw,2rem);margin:0 0 12px}#inicio p{max-width:440px;line-height:1.5;margin:0 0 20px}button{border:1px solid #555;background:#242424;color:#eee;padding:11px 15px;border-radius:10px;font-size:15px;cursor:pointer}button:active{background:#444}#erro{color:#ff9b9b;margin-top:12px;max-width:90%;font-size:14px}#topo{position:absolute;left:0;right:0;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 6px 12px;background:linear-gradient(rgba(0,0,0,.9),transparent);flex-wrap:nowrap}#tempo{position:static;transform:none;width:auto;flex:0 0 auto;text-align:center;font-variant-numeric:tabular-nums;font-size:19px;font-weight:600;pointer-events:none}#configTempo{display:flex;align-items:center;gap:4px;color:#ddd;font-size:13px;flex:0 1 auto;min-width:0}#intervaloSelect,#minutosCustom{border:1px solid #555;background:#242424;color:#eee;border-radius:8px;padding:9px 7px;font-size:14px}#minutosCustom{width:90px}#intervaloSelect{width:128px;padding:9px 6px;font-size:14px}#intervaloSelect:focus,#minutosCustom:focus{outline:none;box-shadow:none;border-color:#555}#idiomas{position:static;display:flex;gap:0;width:max-content;min-width:0;flex:0 0 auto;border:1px solid #555;border-radius:8px;overflow:hidden;justify-content:flex-start}#idiomas button{border:0;border-radius:0;padding:9px 12px;font-size:14px;min-width:44px;background:#242424;color:#aaa}#idiomas button.ativo{background:#333;color:#fff;font-weight:700}#barra{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:24px;padding:12px 10px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.85))}#barra button{padding:12px 20px;font-size:20px;min-width:58px}#app:fullscreen{background:#000}.modal-fundo{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.72)}.modal-fundo.escondido{display:none!important}.modal-caixa{width:min(100%,340px);padding:22px;border:1px solid #555;border-radius:16px;background:#242424;box-shadow:0 12px 40px rgba(0,0,0,.55);text-align:left}.modal-caixa h2{margin:0 0 18px;color:#eee;font-size:20px}.modal-caixa label{display:block;margin-bottom:8px;color:#ccc;font-size:14px}.modal-caixa input{width:100%;padding:12px;border:1px solid #666;border-radius:9px;background:#111;color:#eee;font-size:18px}.modal-acoes{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}.modal-acoes button{font-size:15px}.modal-acoes #confirmarCustom{background:#444;color:#fff;border-color:#777}.escondido{display:none!important}
 </style>
 </head>
 <body>
@@ -16,6 +16,14 @@
   <div id="inicio"><h1>Gesture Mastery</h1><p>Escolha uma pasta de imagens, se o navegador permitir, ou selecione várias fotos. A galeria alternará automaticamente.</p><button id="escolher">Selecionar pasta</button><button id="selecionarArquivos" style="margin-top:10px">Selecionar imagens</button><div id="erro" role="status"></div></div>
   <img id="imagem" alt="Imagem da galeria">
   <div id="topo"><label id="configTempo"><span id="rotuloIntervalo">Intervalo</span> <select id="intervaloSelect"><option value=15>15 s</option><option value=30>30 s</option><option value=60 selected>1 min</option><option value=120>2 min</option><option value=300>5 min</option><option value=custom>Personalizado</option></select></label><span id="tempo">1:00</span><div id="idiomas" aria-label="Language"><button type="button" id="idiomaPT" class="ativo" aria-pressed="true">PT</button><button type="button" id="idiomaEN" aria-pressed="false">EN</button></div></div><div id="barra"><button id="anterior" aria-label="Foto anterior">◀</button><button id="proxima" aria-label="Próxima foto">▶</button></div>
+  <div id="modalCustom" class="modal-fundo escondido" role="dialog" aria-modal="true" aria-labelledby="tituloCustom">
+    <div class="modal-caixa">
+      <h2 id="tituloCustom">Intervalo personalizado</h2>
+      <label id="rotuloCustom" for="valorCustom">Duração em minutos</label>
+      <input id="valorCustom" type="number" min="1" max="1440" step="1" inputmode="numeric" placeholder="Minutos">
+      <div class="modal-acoes"><button type="button" id="cancelarCustom">Cancelar</button><button type="button" id="confirmarCustom">Confirmar</button></div>
+    </div>
+  </div>
   <input id="arquivos" type="file" accept="image/*" multiple class="escondido">
   <input id="pastaMobile" type="file" accept="image/*" multiple webkitdirectory directory class="escondido">
 </div>
@@ -56,16 +64,27 @@ document.getElementById('escolher').onclick=async()=>{erro.textContent='';if(win
 pastaMobile.click()};
 document.getElementById('selecionarArquivos').onclick=()=>arquivos.click();arquivos.onchange=()=>{if(arquivos.files?.length)carregarLista(arquivos.files);arquivos.value=''};pastaMobile.onchange=()=>{if(pastaMobile.files?.length)carregarLista(pastaMobile.files);pastaMobile.value=''};
 let ultimoIntervalo='60';
+const modalCustom=document.getElementById('modalCustom'),valorCustom=document.getElementById('valorCustom');
 function definirDuracao(novaDuracao){duracao=novaDuracao;if(atual>=0)mostrar(atual);else{segundos=duracao;atualizarTempo()}}
+function fecharModalCustom(){modalCustom.classList.add('escondido')}
+function abrirModalCustom(){valorCustom.value=String(Math.max(1,Math.round(duracao/60)));modalCustom.classList.remove('escondido');valorCustom.focus()}
+function atualizarTextoModal(){const en=idioma==='en';document.getElementById('tituloCustom').textContent=en?'Custom interval':'Intervalo personalizado';document.getElementById('rotuloCustom').textContent=en?'Duration in minutes':'Duração em minutos';valorCustom.placeholder=en?'Minutes':'Minutos';document.getElementById('cancelarCustom').textContent=en?'Cancel':'Cancelar';document.getElementById('confirmarCustom').textContent=en?'Confirm':'Confirmar'}
+const aplicarIdiomaOriginal=aplicarIdioma;
+aplicarIdioma=function(){aplicarIdiomaOriginal();atualizarTextoModal()};
+atualizarTextoModal();
 intervaloSelect.onchange=()=>{
- if(intervaloSelect.value==='custom'){
-  const resposta=prompt(idioma==='en'?'Enter the custom interval in minutes (1 to 1440):':'Digite o intervalo personalizado em minutos (1 a 1440):',String(Math.max(1,Math.round(duracao/60))));
-  if(resposta===null||resposta.trim()===''){intervaloSelect.value=ultimoIntervalo;return}
-  const minutos=Number(resposta);
-  if(!Number.isInteger(minutos)||minutos<1||minutos>1440){alert(idioma==='en'?'Enter a whole number from 1 to 1440.':'Digite um número inteiro entre 1 e 1440.');intervaloSelect.value=ultimoIntervalo;return}
-  ultimoIntervalo='custom';definirDuracao(minutos*60);
- }else{ultimoIntervalo=intervaloSelect.value;definirDuracao(Number(intervaloSelect.value))}
+ if(intervaloSelect.value==='custom'){abrirModalCustom()}
+ else{ultimoIntervalo=intervaloSelect.value;definirDuracao(Number(intervaloSelect.value))}
 };
+document.getElementById('cancelarCustom').onclick=()=>{intervaloSelect.value=ultimoIntervalo;fecharModalCustom()};
+document.getElementById('confirmarCustom').onclick=()=>{
+ const minutos=Number(valorCustom.value);
+ if(!Number.isInteger(minutos)||minutos<1||minutos>1440){valorCustom.focus();valorCustom.setCustomValidity(idioma==='en'?'Enter a whole number from 1 to 1440.':'Digite um número inteiro entre 1 e 1440.');valorCustom.reportValidity();return}
+ valorCustom.setCustomValidity('');ultimoIntervalo='custom';definirDuracao(minutos*60);fecharModalCustom()
+};
+valorCustom.addEventListener('input',()=>valorCustom.setCustomValidity(''));
+valorCustom.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('confirmarCustom').click();if(e.key==='Escape')document.getElementById('cancelarCustom').click()});
+modalCustom.addEventListener('click',e=>{if(e.target===modalCustom)document.getElementById('cancelarCustom').click()});
 document.getElementById('anterior').onclick=()=>mostrar(atual-1);document.getElementById('proxima').onclick=()=>mostrar(atual+1);
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')mostrar(atual-1);if(e.key==='ArrowRight')mostrar(atual+1)});
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
