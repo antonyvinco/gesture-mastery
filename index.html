@@ -88,7 +88,7 @@ valorCustom.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElemen
 modalCustom.addEventListener('click',e=>{if(e.target===modalCustom)document.getElementById('cancelarCustom').click()});
 document.getElementById('anterior').onclick=()=>mostrar(atual-1);document.getElementById('proxima').onclick=()=>mostrar(atual+1);
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')mostrar(atual-1);if(e.key==='ArrowRight')mostrar(atual+1)});
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(()=>{}))}
 </script>
 </body>
 </html>
