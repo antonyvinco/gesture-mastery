@@ -1,4 +1,4 @@
-const CACHE_NAME = "gesture-mastery-v26";
+const CACHE_NAME = "gesture-mastery-v27";
 const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon.svg?v=5"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));
@@ -10,8 +10,12 @@ self.addEventListener("activate", event => {
 });
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET" || new URL(event.request.url).origin !== self.location.origin) return;
-  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+  const isPage = event.request.mode === "navigate" || new URL(event.request.url).pathname.endsWith("/index.html");
+  event.respondWith((isPage ? fetch(event.request).then(response => {
     if (response.ok) { const copy = response.clone(); caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)); }
     return response;
-  }).catch(() => caches.match("./index.html"))));
+  }).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+    if (response.ok) { const copy = response.clone(); caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)); }
+    return response;
+  }).catch(() => caches.match("./index.html")))));
 });
