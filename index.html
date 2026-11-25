@@ -15,13 +15,13 @@
 <div id="app">
   <div id="inicio"><h1>Gesture Mastery</h1><p>Escolha uma pasta de imagens, se o navegador permitir, ou selecione várias fotos. A galeria alternará automaticamente.</p><button id="escolher">Selecionar pasta</button><button id="selecionarArquivos" style="margin-top:10px">Selecionar imagens</button><div id="erro" role="status"></div></div>
   <img id="imagem" alt="Imagem da galeria">
-  <div id="topo"><label id="configTempo"><span id="rotuloIntervalo">Intervalo</span> <select id="intervaloSelect"><option value=15>15 s</option><option value=30>30 s</option><option value=60 selected>1 min</option><option value=120>2 min</option><option value=300>5 min</option><option value=custom>Personalizado</option></select><input id="minutosCustom" type="number" min=1 max=1440 step=1 placeholder="min" class="escondido" style="display:none" aria-label="Minutos personalizados"></label><span id="tempo">1:00</span><div id="idiomas" aria-label="Language"><button type="button" id="idiomaPT" class="ativo" aria-pressed="true">PT</button><button type="button" id="idiomaEN" aria-pressed="false">EN</button></div></div><div id="barra"><button id="anterior" aria-label="Foto anterior">◀</button><button id="proxima" aria-label="Próxima foto">▶</button></div>
+  <div id="topo"><label id="configTempo"><span id="rotuloIntervalo">Intervalo</span> <select id="intervaloSelect"><option value=15>15 s</option><option value=30>30 s</option><option value=60 selected>1 min</option><option value=120>2 min</option><option value=300>5 min</option><option value=custom>Personalizado</option></select></label><span id="tempo">1:00</span><div id="idiomas" aria-label="Language"><button type="button" id="idiomaPT" class="ativo" aria-pressed="true">PT</button><button type="button" id="idiomaEN" aria-pressed="false">EN</button></div></div><div id="barra"><button id="anterior" aria-label="Foto anterior">◀</button><button id="proxima" aria-label="Próxima foto">▶</button></div>
   <input id="arquivos" type="file" accept="image/*" multiple class="escondido">
   <input id="pastaMobile" type="file" accept="image/*" multiple webkitdirectory directory class="escondido">
 </div>
 <script>
 let imagens=[],atual=-1,segundos=60,duracao=60,intervalo=null;
-const app=document.getElementById('app'),img=document.getElementById('imagem'),tempo=document.getElementById('tempo'),inicio=document.getElementById('inicio'),erro=document.getElementById('erro'),arquivos=document.getElementById('arquivos'),pastaMobile=document.getElementById('pastaMobile'),intervaloSelect=document.getElementById('intervaloSelect'),minutosCustom=document.getElementById('minutosCustom');
+const app=document.getElementById('app'),img=document.getElementById('imagem'),tempo=document.getElementById('tempo'),inicio=document.getElementById('inicio'),erro=document.getElementById('erro'),arquivos=document.getElementById('arquivos'),pastaMobile=document.getElementById('pastaMobile'),intervaloSelect=document.getElementById('intervaloSelect');
 let idioma=localStorage.getItem('gesture-mastery-idioma')||'pt';
 function aplicarIdioma(){
  const en=idioma==='en';
@@ -34,8 +34,6 @@ function aplicarIdioma(){
  opcoes[3].textContent=en?'2 minutes':'2 minutos';
  opcoes[4].textContent=en?'5 minutes':'5 minutos';
  opcoes[5].textContent=en?'Custom':'Personalizado';
- minutosCustom.placeholder=en?'min':'min';
- minutosCustom.setAttribute('aria-label',en?'Custom minutes':'Minutos personalizados');
  document.querySelector('#inicio p').textContent=en?'Choose an image folder, if your browser allows it, or select multiple photos. The gallery will switch automatically.':'Escolha uma pasta de imagens, se o navegador permitir, ou selecione várias fotos. A galeria alternará automaticamente.';
  document.getElementById('escolher').textContent=en?'Select folder':'Selecionar pasta';
  document.getElementById('selecionarArquivos').textContent=en?'Select images':'Selecionar imagens';
@@ -57,11 +55,17 @@ function carregarLista(lista){const validos=Array.from(lista).filter(f=>f.type.s
 document.getElementById('escolher').onclick=async()=>{erro.textContent='';if(window.showDirectoryPicker){try{const dir=await window.showDirectoryPicker();const lista=[];for await(const [,handle] of dir.entries()){if(handle.kind==='file'){const f=await handle.getFile();if(f.type.startsWith('image/')||/\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(f.name))lista.push(f)}}carregarLista(lista);return}catch(e){if(e.name==='AbortError')return;erro.textContent=idioma==='en'?'The browser could not select the folder. Try selecting images individually or use the alternate folder button.':'O navegador não conseguiu selecionar a pasta. Tente selecionar imagens individualmente ou use o botão de pasta alternativo.'}}
 pastaMobile.click()};
 document.getElementById('selecionarArquivos').onclick=()=>arquivos.click();arquivos.onchange=()=>{if(arquivos.files?.length)carregarLista(arquivos.files);arquivos.value=''};pastaMobile.onchange=()=>{if(pastaMobile.files?.length)carregarLista(pastaMobile.files);pastaMobile.value=''};
-function atualizarCampoMinutos(){const custom=intervaloSelect.value==='custom';minutosCustom.classList.toggle('escondido',!custom);minutosCustom.style.display=custom?'block':'none'}
+let ultimoIntervalo='60';
 function definirDuracao(novaDuracao){duracao=novaDuracao;if(atual>=0)mostrar(atual);else{segundos=duracao;atualizarTempo()}}
-atualizarCampoMinutos();
-intervaloSelect.onchange=()=>{atualizarCampoMinutos();if(intervaloSelect.value!=='custom')definirDuracao(Number(intervaloSelect.value))};
-minutosCustom.onchange=()=>{const m=Math.max(1,Math.min(1440,Number(minutosCustom.value)||1));minutosCustom.value=m;definirDuracao(m*60)};
+intervaloSelect.onchange=()=>{
+ if(intervaloSelect.value==='custom'){
+  const resposta=prompt(idioma==='en'?'Enter the custom interval in minutes (1 to 1440):':'Digite o intervalo personalizado em minutos (1 a 1440):',String(Math.max(1,Math.round(duracao/60))));
+  if(resposta===null||resposta.trim()===''){intervaloSelect.value=ultimoIntervalo;return}
+  const minutos=Number(resposta);
+  if(!Number.isInteger(minutos)||minutos<1||minutos>1440){alert(idioma==='en'?'Enter a whole number from 1 to 1440.':'Digite um número inteiro entre 1 e 1440.');intervaloSelect.value=ultimoIntervalo;return}
+  ultimoIntervalo='custom';definirDuracao(minutos*60);
+ }else{ultimoIntervalo=intervaloSelect.value;definirDuracao(Number(intervaloSelect.value))}
+};
 document.getElementById('anterior').onclick=()=>mostrar(atual-1);document.getElementById('proxima').onclick=()=>mostrar(atual+1);
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')mostrar(atual-1);if(e.key==='ArrowRight')mostrar(atual+1)});
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
