@@ -68,7 +68,7 @@ const modalCustom=document.getElementById('modalCustom'),valorCustom=document.ge
 function definirDuracao(novaDuracao){duracao=novaDuracao;if(atual>=0)mostrar(atual);else{segundos=duracao;atualizarTempo()}}
 function fecharModalCustom(){modalCustom.classList.add('escondido')}
 function abrirModalCustom(){valorCustom.value=String(Math.max(1,Math.round(duracao/60)));modalCustom.classList.remove('escondido');valorCustom.focus()}
-function atualizarTextoModal(){const en=idioma==='en';document.getElementById('tituloCustom').textContent=en?'Enter the interval':'Digite o intervalo';document.getElementById('rotuloCustom').textContent=en?'Set the interval duration':'Defina a duração do intervalo';valorCustom.placeholder=en?'Minutes':'Minutos';document.getElementById('cancelarCustom').textContent=en?'Cancel':'Cancelar';document.getElementById('confirmarCustom').textContent=en?'Confirm':'Confirmar'}
+function atualizarTextoModal(){const en=idioma==='en';document.getElementById('tituloCustom').textContent=en?'Enter the interval':'Digite o intervalo';document.getElementById('rotuloCustom').textContent=en?'Set the interval':'Defina o intervalo';valorCustom.placeholder=en?'Minutes':'Minutos';document.getElementById('cancelarCustom').textContent=en?'Cancel':'Cancelar';document.getElementById('confirmarCustom').textContent=en?'Confirm':'Confirmar'}
 const aplicarIdiomaOriginal=aplicarIdioma;
 aplicarIdioma=function(){aplicarIdiomaOriginal();atualizarTextoModal()};
 atualizarTextoModal();
