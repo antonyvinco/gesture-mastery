@@ -15,7 +15,7 @@
 <div id="app">
   <div id="inicio"><h1>Gesture Mastery</h1><p>Escolha uma pasta de imagens, se o navegador permitir, ou selecione várias fotos. A galeria alternará automaticamente.</p><button id="escolher">Selecionar pasta</button><button id="selecionarArquivos" style="margin-top:10px">Selecionar imagens</button><div id="erro" role="status"></div></div>
   <img id="imagem" alt="Imagem da galeria">
-  <div id="topo"><label id="configTempo"><span id="rotuloIntervalo">Intervalo</span> <select id="intervaloSelect"><option value=15>15 s</option><option value=30>30 s</option><option value=60 selected>1 min</option><option value=120>2 min</option><option value=300>5 min</option><option value=custom>Personalizado</option></select></label><span id="tempo">1:00</span><div id="idiomas" aria-label="Language"><button type="button" id="idiomaPT" class="ativo" aria-pressed="true">PT</button><button type="button" id="idiomaEN" aria-pressed="false">EN</button></div></div><div id="barra"><button id="anterior" aria-label="Foto anterior">◀</button><button id="proxima" aria-label="Próxima foto">▶</button></div>
+  <div id="topo"><label id="configTempo"><span id="rotuloIntervalo">Intervalo</span> <select id="intervaloSelect"><option value=15>15 s</option><option value=30>30 s</option><option value=45>45 s</option><option value=60 selected>1 min</option><option value=120>2 min</option><option value=300>5 min</option><option value=custom>Personalizado</option></select></label><span id="tempo">1:00</span><div id="idiomas" aria-label="Language"><button type="button" id="idiomaPT" class="ativo" aria-pressed="true">PT</button><button type="button" id="idiomaEN" aria-pressed="false">EN</button></div></div><div id="barra"><button id="anterior" aria-label="Foto anterior">◀</button><button id="proxima" aria-label="Próxima foto">▶</button></div>
   <div id="modalCustom" class="modal-fundo escondido" role="dialog" aria-modal="true" aria-labelledby="tituloCustom">
     <div class="modal-caixa">
       <h2 id="tituloCustom">Intervalo personalizado</h2>
@@ -38,10 +38,11 @@ function aplicarIdioma(){
  const opcoes=intervaloSelect.options;
  opcoes[0].textContent=en?'15 seconds':'15 segundos';
  opcoes[1].textContent=en?'30 seconds':'30 segundos';
- opcoes[2].textContent=en?'1 minute':'1 minuto';
- opcoes[3].textContent=en?'2 minutes':'2 minutos';
- opcoes[4].textContent=en?'5 minutes':'5 minutos';
- opcoes[5].textContent=en?'Custom':'Personalizado';
+ opcoes[2].textContent=en?'45 seconds':'45 segundos';
+ opcoes[3].textContent=en?'1 minute':'1 minuto';
+ opcoes[4].textContent=en?'2 minutes':'2 minutos';
+ opcoes[5].textContent=en?'5 minutes':'5 minutos';
+ opcoes[6].textContent=en?'Custom':'Personalizado';
  document.querySelector('#inicio p').textContent=en?'Choose an image folder, if your browser allows it, or select multiple photos. The gallery will switch automatically.':'Escolha uma pasta de imagens, se o navegador permitir, ou selecione várias fotos. A galeria alternará automaticamente.';
  document.getElementById('escolher').textContent=en?'Select folder':'Selecionar pasta';
  document.getElementById('selecionarArquivos').textContent=en?'Select images':'Selecionar imagens';
