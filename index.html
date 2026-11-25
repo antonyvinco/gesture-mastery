@@ -28,6 +28,11 @@ function aplicarIdioma(){
  document.documentElement.lang=en?'en':'pt-BR';
  document.getElementById('rotuloIntervalo').textContent=en?'Interval':'Intervalo';
  const opcoes=intervaloSelect.options;
+ opcoes[0].textContent=en?'15 seconds':'15 segundos';
+ opcoes[1].textContent=en?'30 seconds':'30 segundos';
+ opcoes[2].textContent=en?'1 minute':'1 minuto';
+ opcoes[3].textContent=en?'2 minutes':'2 minutos';
+ opcoes[4].textContent=en?'5 minutes':'5 minutos';
  opcoes[5].textContent=en?'Custom':'Personalizado';
  minutosCustom.placeholder=en?'min':'min';
  minutosCustom.setAttribute('aria-label',en?'Custom minutes':'Minutos personalizados');
