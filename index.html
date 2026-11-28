@@ -13,7 +13,7 @@
 </head>
 <body>
 <div id="app">
-  <div id="inicio"><h1>Gesture Mastery</h1><p>Escolha uma pasta de imagens, se o navegador permitir, ou selecione várias fotos. A galeria alternará automaticamente.</p><button id="escolher">Selecionar pasta</button><button id="selecionarArquivos" style="margin-top:10px">Selecionar imagens</button><div id="erro" role="status"></div></div>
+  <div id="inicio"><h1>Gesture Mastery</h1><p id="mensagemInicio">Carregando referências...</p><div id="erro" role="status"></div></div>
   <img id="imagem" alt="Imagem da galeria">
   <div id="topo"><label id="configTempo"><span id="rotuloIntervalo">Intervalo</span> <select id="intervaloSelect"><option value=15>15 s</option><option value=30>30 s</option><option value=45>45 s</option><option value=60 selected>1 min</option><option value=120>2 min</option><option value=300>5 min</option><option value=custom>Personalizado</option></select></label><span id="tempo">1:00</span><div id="idiomas" aria-label="Language"><button type="button" id="idiomaPT" class="ativo" aria-pressed="true">PT</button><button type="button" id="idiomaEN" aria-pressed="false">EN</button></div></div><div id="barra"><button id="anterior" aria-label="Foto anterior">◀</button><button id="proxima" aria-label="Próxima foto">▶</button></div>
   <div id="modalCustom" class="modal-fundo escondido" role="dialog" aria-modal="true" aria-labelledby="tituloCustom">
@@ -24,70 +24,57 @@
       <div class="modal-acoes"><button type="button" id="cancelarCustom">Cancelar</button><button type="button" id="confirmarCustom">Confirmar</button></div>
     </div>
   </div>
-  <input id="arquivos" type="file" accept="image/*" multiple class="escondido">
-  <input id="pastaMobile" type="file" accept="image/*" multiple webkitdirectory directory class="escondido">
 </div>
 <script>
-let imagens=[],atual=-1,segundos=60,duracao=60,intervalo=null;
-const app=document.getElementById('app'),img=document.getElementById('imagem'),tempo=document.getElementById('tempo'),inicio=document.getElementById('inicio'),erro=document.getElementById('erro'),arquivos=document.getElementById('arquivos'),pastaMobile=document.getElementById('pastaMobile'),intervaloSelect=document.getElementById('intervaloSelect');
-let idioma=localStorage.getItem('gesture-mastery-idioma')||'pt';
+let imagens=[],atual=-1,segundos=60,duracao=60,intervalo=null,idioma=localStorage.getItem('gesture-mastery-idioma')||'pt',ordem=[],posicao=0;
+const img=document.getElementById('imagem'),tempo=document.getElementById('tempo'),inicio=document.getElementById('inicio'),erro=document.getElementById('erro'),intervaloSelect=document.getElementById('intervaloSelect');
 function aplicarIdioma(){
- const en=idioma==='en';
+ const en=idioma==='en',op=intervaloSelect.options;
  document.documentElement.lang=en?'en':'pt-BR';
  document.getElementById('rotuloIntervalo').textContent=en?'Interval':'Intervalo';
- const opcoes=intervaloSelect.options;
- opcoes[0].textContent=en?'15 seconds':'15 segundos';
- opcoes[1].textContent=en?'30 seconds':'30 segundos';
- opcoes[2].textContent=en?'45 seconds':'45 segundos';
- opcoes[3].textContent=en?'1 minute':'1 minuto';
- opcoes[4].textContent=en?'2 minutes':'2 minutos';
- opcoes[5].textContent=en?'5 minutes':'5 minutos';
- opcoes[6].textContent=en?'Custom':'Personalizado';
- document.querySelector('#inicio p').textContent=en?'Choose an image folder, if your browser allows it, or select multiple photos. The gallery will switch automatically.':'Escolha uma pasta de imagens, se o navegador permitir, ou selecione várias fotos. A galeria alternará automaticamente.';
- document.getElementById('escolher').textContent=en?'Select folder':'Selecionar pasta';
- document.getElementById('selecionarArquivos').textContent=en?'Select images':'Selecionar imagens';
- document.getElementById('imagem').alt=en?'Gallery image':'Imagem da galeria';
- document.getElementById('anterior').setAttribute('aria-label',en?'Previous photo':'Foto anterior');
- document.getElementById('proxima').setAttribute('aria-label',en?'Next photo':'Próxima foto');
- document.getElementById('idiomaPT').classList.toggle('ativo',!en);
- document.getElementById('idiomaEN').classList.toggle('ativo',en);
- document.getElementById('idiomaPT').setAttribute('aria-pressed',String(!en));
- document.getElementById('idiomaEN').setAttribute('aria-pressed',String(en));
+ ['15 seconds','30 seconds','45 seconds','1 minute','2 minutes','5 minutes','Custom'].forEach((v,i)=>op[i].textContent=en?v:['15 segundos','30 segundos','45 segundos','1 minuto','2 minutos','5 minutos','Personalizado'][i]);
+ document.getElementById('mensagemInicio').textContent=en?'Loading references...':'Carregando referências...';
+ document.getElementById('imagem').alt=en?'Gesture drawing reference':'Referência para desenho gestual';
+ document.getElementById('anterior').setAttribute('aria-label',en?'Previous image':'Imagem anterior');
+ document.getElementById('proxima').setAttribute('aria-label',en?'Next image':'Próxima imagem');
+ document.getElementById('idiomaPT').classList.toggle('ativo',!en);document.getElementById('idiomaEN').classList.toggle('ativo',en);
+ document.getElementById('idiomaPT').setAttribute('aria-pressed',String(!en));document.getElementById('idiomaEN').setAttribute('aria-pressed',String(en));
+ atualizarTextoModal();
 }
 document.getElementById('idiomaPT').onclick=()=>{idioma='pt';localStorage.setItem('gesture-mastery-idioma',idioma);aplicarIdioma()};
 document.getElementById('idiomaEN').onclick=()=>{idioma='en';localStorage.setItem('gesture-mastery-idioma',idioma);aplicarIdioma()};
 function atualizarTempo(){tempo.textContent=Math.floor(segundos/60)+':'+String(segundos%60).padStart(2,'0')}
-aplicarIdioma();
 function embaralhar(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
-function mostrar(n){if(!imagens.length)return;atual=(n+imagens.length)%imagens.length;img.src=imagens[atual];img.style.display='block';inicio.style.display='none';segundos=duracao;atualizarTempo();clearInterval(intervalo);intervalo=setInterval(()=>{segundos--;atualizarTempo();if(segundos<=0){if(imagens.length===1)mostrar(atual);else{let p;do{p=Math.floor(Math.random()*imagens.length)}while(p===atual);mostrar(p)}}},1000)}
-function carregarLista(lista){const validos=Array.from(lista).filter(f=>f.type.startsWith('image/')||/\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(f.name));if(!validos.length){erro.textContent=idioma==='en'?'No images found in the selection.':'Não encontrei imagens na seleção.';return}imagens.forEach(u=>URL.revokeObjectURL(u));const chave=f=>`${f.name}|${f.size}|${f.lastModified}`;const ultimaInicial=localStorage.getItem('gesture-mastery-ultima-inicial');embaralhar(validos);if(validos.length>1&&chave(validos[0])===ultimaInicial){const diferente=validos.findIndex(f=>chave(f)!==ultimaInicial);if(diferente>0)[validos[0],validos[diferente]]=[validos[diferente],validos[0]]}localStorage.setItem('gesture-mastery-ultima-inicial',chave(validos[0]));imagens=validos.map(f=>URL.createObjectURL(f));erro.textContent='';mostrar(0)}
-document.getElementById('escolher').onclick=async()=>{erro.textContent='';if(window.showDirectoryPicker){try{const dir=await window.showDirectoryPicker();const lista=[];for await(const [,handle] of dir.entries()){if(handle.kind==='file'){const f=await handle.getFile();if(f.type.startsWith('image/')||/\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(f.name))lista.push(f)}}carregarLista(lista);return}catch(e){if(e.name==='AbortError')return;erro.textContent=idioma==='en'?'The browser could not select the folder. Try selecting images individually or use the alternate folder button.':'O navegador não conseguiu selecionar a pasta. Tente selecionar imagens individualmente ou use o botão de pasta alternativo.'}}
-pastaMobile.click()};
-document.getElementById('selecionarArquivos').onclick=()=>arquivos.click();arquivos.onchange=()=>{if(arquivos.files?.length)carregarLista(arquivos.files);arquivos.value=''};pastaMobile.onchange=()=>{if(pastaMobile.files?.length)carregarLista(pastaMobile.files);pastaMobile.value=''};
+function proximaAleatoria(){
+ if(posicao>=ordem.length){ordem=imagens.map((_,i)=>i);embaralhar(ordem);if(ordem.length>1&&ordem[0]===atual)[ordem[0],ordem[1]]=[ordem[1],ordem[0]];posicao=0}
+ mostrar(ordem[posicao++]);
+}
+function mostrar(n){if(!imagens.length)return;atual=(n+imagens.length)%imagens.length;img.src=imagens[atual];img.style.display='block';inicio.style.display='none';segundos=duracao;atualizarTempo();clearInterval(intervalo);intervalo=setInterval(()=>{segundos--;atualizarTempo();if(segundos<=0)proximaAleatoria()},1000)}
+async function carregarBanco(){
+ try{
+  const resposta=await fetch('https://api.github.com/repos/antonyvinco/gesture-mastery/contents/imagens',{cache:'no-store'});
+  if(!resposta.ok)throw new Error('Não foi possível acessar o banco de imagens.');
+  const arquivos=await resposta.json();
+  imagens=arquivos.filter(f=>f.type==='file'&&/\.(jpe?g|png|webp|avif)$/i.test(f.name)).map(f=>f.download_url);
+  if(!imagens.length){document.getElementById('mensagemInicio').textContent=idioma==='en'?'Your image library is empty. Add JPG images to the imagens folder on GitHub.':'Seu banco ainda está vazio. Adicione imagens JPG à pasta imagens no GitHub.';return}
+  ordem=imagens.map((_,i)=>i);embaralhar(ordem);proximaAleatoria();
+ }catch(e){document.getElementById('mensagemInicio').textContent=idioma==='en'?'Could not load the image library. Check your internet connection.':'Não foi possível carregar o banco de imagens. Verifique sua conexão.';erro.textContent=e.message}
+}
 let ultimoIntervalo='60';
 const modalCustom=document.getElementById('modalCustom'),valorCustom=document.getElementById('valorCustom');
-function definirDuracao(novaDuracao){duracao=novaDuracao;if(atual>=0)mostrar(atual);else{segundos=duracao;atualizarTempo()}}
+function definirDuracao(n){duracao=n;if(atual>=0)mostrar(atual);else{segundos=duracao;atualizarTempo()}}
 function fecharModalCustom(){modalCustom.classList.add('escondido')}
 function abrirModalCustom(){valorCustom.value=String(Math.max(1,Math.round(duracao/60)));modalCustom.classList.remove('escondido');valorCustom.focus()}
 function atualizarTextoModal(){const en=idioma==='en';document.getElementById('tituloCustom').textContent=en?'Enter the interval':'Digite o intervalo';document.getElementById('rotuloCustom').textContent=en?'Set the interval':'Defina o intervalo';valorCustom.placeholder=en?'Minutes':'Minutos';document.getElementById('cancelarCustom').textContent=en?'Cancel':'Cancelar';document.getElementById('confirmarCustom').textContent=en?'Confirm':'Confirmar'}
-const aplicarIdiomaOriginal=aplicarIdioma;
-aplicarIdioma=function(){aplicarIdiomaOriginal();atualizarTextoModal()};
-atualizarTextoModal();
-intervaloSelect.onchange=()=>{
- if(intervaloSelect.value==='custom'){abrirModalCustom()}
- else{ultimoIntervalo=intervaloSelect.value;definirDuracao(Number(intervaloSelect.value))}
-};
+intervaloSelect.onchange=()=>{if(intervaloSelect.value==='custom')abrirModalCustom();else{ultimoIntervalo=intervaloSelect.value;definirDuracao(Number(intervaloSelect.value))}};
 document.getElementById('cancelarCustom').onclick=()=>{intervaloSelect.value=ultimoIntervalo;fecharModalCustom()};
-document.getElementById('confirmarCustom').onclick=()=>{
- const minutos=Number(valorCustom.value);
- if(!Number.isInteger(minutos)||minutos<1||minutos>1440){valorCustom.focus();valorCustom.setCustomValidity(idioma==='en'?'Enter a whole number from 1 to 1440.':'Digite um número inteiro entre 1 e 1440.');valorCustom.reportValidity();return}
- valorCustom.setCustomValidity('');ultimoIntervalo='custom';definirDuracao(minutos*60);fecharModalCustom()
-};
-valorCustom.addEventListener('input',()=>valorCustom.setCustomValidity(''));
+document.getElementById('confirmarCustom').onclick=()=>{const m=Number(valorCustom.value);if(!Number.isInteger(m)||m<1||m>1440){valorCustom.focus();return}ultimoIntervalo='custom';definirDuracao(m*60);fecharModalCustom()};
 valorCustom.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('confirmarCustom').click();if(e.key==='Escape')document.getElementById('cancelarCustom').click()});
 modalCustom.addEventListener('click',e=>{if(e.target===modalCustom)document.getElementById('cancelarCustom').click()});
-document.getElementById('anterior').onclick=()=>mostrar(atual-1);document.getElementById('proxima').onclick=()=>mostrar(atual+1);
-document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')mostrar(atual-1);if(e.key==='ArrowRight')mostrar(atual+1)});
+document.getElementById('anterior').onclick=()=>mostrar(atual-1);
+document.getElementById('proxima').onclick=()=>proximaAleatoria();
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')mostrar(atual-1);if(e.key==='ArrowRight')proximaAleatoria()});
+aplicarIdioma();atualizarTempo();carregarBanco();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(()=>{}))}
 </script>
 </body>
