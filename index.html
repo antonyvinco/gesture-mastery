@@ -49,7 +49,35 @@ function proximaAleatoria(){
  if(posicao>=ordem.length){ordem=imagens.map((_,i)=>i);embaralhar(ordem);if(ordem.length>1&&ordem[0]===atual)[ordem[0],ordem[1]]=[ordem[1],ordem[0]];posicao=0}
  mostrar(ordem[posicao++]);
 }
-function mostrar(n){if(!imagens.length)return;atual=(n+imagens.length)%imagens.length;img.src=imagens[atual];img.style.display='block';inicio.style.display='none';segundos=duracao;atualizarTempo();clearInterval(intervalo);intervalo=setInterval(()=>{segundos--;atualizarTempo();if(segundos<=0)proximaAleatoria()},1000)}
+const imagensPreparadas=new Map();
+function prepararImagem(indice){
+ if(!imagens.length)return;
+ indice=(indice+imagens.length)%imagens.length;
+ const url=imagens[indice];
+ if(imagensPreparadas.has(url))return;
+ const pre=new Image();
+ pre.decoding='async';
+ pre.src=url;
+ imagensPreparadas.set(url,pre);
+ if(imagensPreparadas.size>4){
+  const primeira=imagensPreparadas.keys().next().value;
+  if(primeira!==img.src)imagensPreparadas.delete(primeira);
+ }
+}
+function mostrar(n){
+ if(!imagens.length)return;
+ atual=(n+imagens.length)%imagens.length;
+ const url=imagens[atual];
+ const pronta=imagensPreparadas.get(url);
+ img.src=pronta?pronta.src:url;
+ img.style.display='block';
+ inicio.style.display='none';
+ segundos=duracao;atualizarTempo();
+ prepararImagem(atual+1);
+ prepararImagem(atual-1);
+ clearInterval(intervalo);
+ intervalo=setInterval(()=>{segundos--;atualizarTempo();if(segundos<=0)proximaAleatoria()},1000);
+}
 async function carregarBanco(){
  try{
   const resposta=await fetch('https://api.github.com/repos/antonyvinco/gesture-mastery/contents/imagens',{cache:'no-store'});
